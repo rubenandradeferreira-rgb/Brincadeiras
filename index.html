@@ -8,57 +8,77 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --noite: #1c1733;
-    --painel: #2a2350;
-    --minha: #ff8fa3;
-    --minha-texto: #2b1020;
-    --dela: #3b3270;
-    --texto: #f4effa;
-    --suave: #a99fcb;
-    --erro: #ffb4a8;
-  }
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
-  body {
-    background: var(--noite); color: var(--texto);
-    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
-    font-size: 16px; line-height: 1.4;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  button, input { font: inherit; color: inherit; }
-  :focus-visible { outline: 3px solid var(--minha); outline-offset: 2px; }
-
-  /* Entrada */
-  #entrada { display: flex; flex-direction: column; justify-content: center; gap: 14px; max-width: 380px; margin: 0 auto; padding: 24px; height: 100%; }
-  #entrada h1 { font-size: 2rem; font-weight: 800; margin: 0 0 4px; }
-  #entrada p { margin: 0 0 8px; color: var(--suave); }
-  label { font-weight: 600; font-size: .9rem; color: var(--suave); }
-  input { width: 100%; padding: 13px 14px; border-radius: 14px; border: 2px solid transparent; background: var(--painel); }
-  input:focus { border-color: var(--minha); outline: none; }
-  .botao { padding: 14px; border: 0; border-radius: 14px; background: var(--minha); color: var(--minha-texto); font-weight: 800; cursor: pointer; }
-  .botao:disabled { opacity: .5; cursor: default; }
-  #erro { color: var(--erro); min-height: 1.4em; margin: 0; }
-
-  /* Chat */
-  #chat { display: none; flex-direction: column; height: 100%; max-width: 640px; margin: 0 auto; }
-  #chat.ativo { display: flex; }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--painel); }
-  header strong { font-size: 1.1rem; font-weight: 800; }
-  header button { background: none; border: 0; color: var(--suave); cursor: pointer; padding: 6px; }
-  #mensagens { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; }
-  .vazio { margin: auto; text-align: center; color: var(--suave); }
-  .msg { max-width: 80%; padding: 9px 13px; border-radius: 18px; background: var(--dela); overflow-wrap: anywhere; white-space: pre-wrap; align-self: flex-start; border-bottom-left-radius: 6px; }
-  .msg.minha { align-self: flex-end; background: var(--minha); color: var(--minha-texto); border-bottom-left-radius: 18px; border-bottom-right-radius: 6px; }
-  .msg small { display: block; margin-top: 2px; font-size: .72rem; opacity: .7; text-align: right; white-space: normal; }
-  form { display: flex; gap: 8px; padding: 10px 12px; background: var(--painel); }
-  form input { background: var(--noite); flex: 1; }
-  form .botao { padding: 0 20px; }
-  @media (prefers-reduced-motion: no-preference) {
-    .msg { animation: entra .18s ease-out; }
-    @keyframes entra { from { transform: translateY(6px); opacity: 0; } }
-  }
+  :root { --noite:#1c1733; --painel:#2a2350; --minha:#ff8fa3; --minha-texto:#2b1020; --dela:#3b3270; --texto:#f4effa; --suave:#a99fcb; --erro:#ffb4a8; }
+  * { box-sizing:border-box; }
+  html, body { height:100%; margin:0; }
+  body { background:var(--noite); color:var(--texto); font-family:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif; font-size:16px; line-height:1.4; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+  button, input { font:inherit; color:inherit; }
+  :focus-visible { outline:3px solid var(--minha); outline-offset:2px; }
+  #entrada { display:flex; flex-direction:column; justify-content:center; gap:14px; max-width:380px; margin:0 auto; padding:24px; height:100%; }
+  #entrada h1 { font-size:2rem; font-weight:800; margin:0 0 4px; }
+  #entrada p { margin:0 0 8px; color:var(--suave); }
+  label { font-weight:600; font-size:.9rem; color:var(--suave); }
+  input[type=text] { width:100%; padding:13px 14px; border-radius:14px; border:2px solid transparent; background:var(--painel); }
+  input[type=text]:focus { border-color:var(--minha); outline:none; }
+  .botao { padding:14px; border:0; border-radius:14px; background:var(--minha); color:var(--minha-texto); font-weight:800; cursor:pointer; }
+  .botao:disabled { opacity:.5; }
+  #erro { color:var(--erro); min-height:1.4em; margin:0; }
+  #chat { display:none; flex-direction:column; height:100%; max-width:640px; margin:0 auto; position:relative; }
+  #chat.ativo { display:flex; }
+  header { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--painel); }
+  header strong { flex:1; font-size:1.1rem; font-weight:800; }
+  .txt { background:none; border:0; color:var(--suave); cursor:pointer; padding:8px; }
+  .av { width:36px; height:36px; border-radius:50%; background:var(--dela); display:grid; place-items:center; font-weight:800; overflow:hidden; flex:none; }
+  .av img { width:100%; height:100%; object-fit:cover; display:block; }
+  .av.peq { width:28px; height:28px; font-size:.8rem; }
+  .avbtn { position:relative; width:42px; height:42px; padding:0; border:0; background:none; border-radius:50%; cursor:pointer; flex:none; color:var(--texto); }
+  .avbtn .av { width:42px; height:42px; border:2px solid var(--minha); }
+  .badge { position:absolute; right:-3px; bottom:-3px; width:20px; height:20px; border-radius:50%; background:var(--minha); color:var(--minha-texto); display:grid; place-items:center; border:2px solid var(--painel); }
+  .av.grande { width:120px; height:120px; font-size:2.8rem; border:3px solid var(--minha); margin:4px auto 0; }
+  #dica { display:none; align-items:center; gap:10px; padding:8px 14px; background:var(--dela); font-size:.9rem; }
+  #dica.aberto { display:flex; }
+  #dica button.corpo { flex:1; text-align:left; background:none; border:0; padding:4px 0; cursor:pointer; font-weight:600; }
+  #dica button.x { background:none; border:0; cursor:pointer; color:var(--suave); font-size:1.3rem; line-height:1; padding:6px 10px; }
+  #perfil { display:none; position:fixed; inset:0; z-index:8; background:rgba(10,8,20,.7); align-items:flex-end; justify-content:center; }
+  #perfil.aberto { display:flex; }
+  .folha { width:100%; max-width:640px; background:var(--painel); border-radius:24px 24px 0 0; padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:10px; text-align:center; }
+  .folha h2 { margin:0; font-size:1.2rem; font-weight:800; }
+  .folha p { margin:0 0 6px; color:var(--suave); font-size:.9rem; }
+  .botao.sec { background:var(--dela); color:var(--texto); }
+  .botao.perigo { background:none; color:var(--erro); }
+  #previa { display:none; gap:10px; padding:10px 12px 2px; background:var(--painel); overflow-x:auto; }
+  #previa.aberto { display:flex; }
+  .mini { position:relative; flex:none; }
+  .mini img { display:block; width:64px; height:64px; object-fit:cover; border-radius:12px; }
+  .mini button { position:absolute; top:-7px; right:-7px; width:24px; height:24px; border-radius:50%; border:0; background:var(--noite); color:var(--texto); cursor:pointer; line-height:1; font-size:1rem; padding:0; }
+  .msg img + .legenda { display:block; margin-top:6px; }
+  #chat.arrastar::after { content:"Larga as fotos aqui"; position:absolute; inset:0; z-index:5; display:grid; place-items:center; background:rgba(28,23,51,.85); border:3px dashed var(--minha); font-weight:800; font-size:1.2rem; }
+  #ver .fechar { position:absolute; top:calc(12px + env(safe-area-inset-top,0px)); right:14px; width:44px; height:44px; border-radius:50%; border:0; background:var(--painel); cursor:pointer; font-size:1.4rem; }
+  #ver a { position:absolute; bottom:calc(16px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%); padding:10px 20px; border-radius:14px; background:var(--minha); color:var(--minha-texto); font-weight:800; text-decoration:none; }
+  .painel-fundo { display:none; background:var(--painel); padding:6px 14px 14px; border-top:1px solid var(--dela); }
+  .painel-fundo.aberto { display:block; }
+  .painel-fundo p { margin:6px 0 10px; color:var(--suave); font-size:.9rem; }
+  .amostras { display:flex; flex-wrap:wrap; gap:10px; }
+  .amostra { width:58px; border:0; background:none; cursor:pointer; font-size:.72rem; color:var(--suave); padding:0; }
+  .amostra span { display:block; height:44px; border-radius:12px; margin-bottom:3px; border:2px solid transparent; }
+  .amostra.sel span { border-color:var(--minha); }
+  #mensagens { flex:1; overflow-y:auto; padding:16px 12px; display:flex; flex-direction:column; gap:6px; background:var(--noite) center/cover; }
+  .vazio { margin:auto; text-align:center; color:var(--suave); }
+  .linha { display:flex; align-items:flex-end; gap:6px; max-width:88%; align-self:flex-start; }
+  .linha.minha { align-self:flex-end; }
+  .msg { padding:9px 13px; border-radius:18px; background:var(--dela); overflow-wrap:anywhere; white-space:pre-wrap; border-bottom-left-radius:6px; }
+  .minha .msg { background:var(--minha); color:var(--minha-texto); border-bottom-left-radius:18px; border-bottom-right-radius:6px; }
+  .msg.foto { padding:4px; }
+  .msg img { display:block; width:230px; max-width:100%; border-radius:14px; cursor:zoom-in; }
+  .msg small { display:block; margin-top:2px; padding:0 6px; font-size:.72rem; opacity:.7; text-align:right; white-space:normal; }
+  form { display:flex; gap:8px; align-items:center; padding:10px 12px; background:var(--painel); }
+  form input[type=text] { background:var(--noite); flex:1; }
+  form .botao { padding:0 20px; height:46px; }
+  #anexar { background:none; border:0; padding:6px; color:var(--suave); cursor:pointer; display:grid; }
+  #ver { display:none; position:fixed; inset:0; background:rgba(10,8,20,.94); z-index:9; align-items:center; justify-content:center; padding:16px; }
+  #ver.aberto { display:flex; }
+  #ver img { max-width:100%; max-height:100%; border-radius:12px; }
+  @media (prefers-reduced-motion: no-preference) { .linha { animation:entra .18s ease-out; } @keyframes entra { from { transform:translateY(6px); opacity:0; } } }
 </style>
 </head>
 <body>
@@ -66,37 +86,66 @@
 <section id="entrada">
   <h1>Nós os dois</h1>
   <p>Um chat só para vocês. Usem o mesmo código e conversam em tempo real.</p>
-  <div>
-    <label for="nome">O teu nome</label>
-    <input id="nome" autocomplete="given-name" maxlength="20">
-  </div>
-  <div>
-    <label for="codigo">Código secreto do chat</label>
-    <input id="codigo" autocomplete="off" maxlength="40" placeholder="Escolham uma frase só vossa">
-  </div>
+  <div><label for="nome">O teu nome</label><input type="text" id="nome" autocomplete="given-name" maxlength="20"></div>
+  <div><label for="codigo">Código secreto do chat</label><input type="text" id="codigo" autocomplete="off" maxlength="40" placeholder="Escolham uma frase só vossa"></div>
   <p id="erro" role="alert"></p>
   <button class="botao" id="entrar">Entrar no chat</button>
 </section>
 
 <section id="chat" aria-label="Conversa">
   <header>
-    <strong id="titulo">Chat</strong>
-    <button id="sair">Sair</button>
+    <button class="avbtn" id="meuAv" title="A minha foto de perfil" aria-label="A minha foto de perfil">
+      <span class="av" id="meuAvImg"></span>
+      <span class="badge" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+    </button>
+    <strong>Nós os dois</strong>
+    <button class="txt" id="btFundo">Fundo</button>
+    <button class="txt" id="sair">Sair</button>
   </header>
+  <div id="dica"><button class="corpo" id="dicaAbrir">Põe uma foto de perfil para a outra pessoa te reconhecer</button><button class="x" id="dicaFechar" aria-label="Fechar aviso">×</button></div>
+  <div class="painel-fundo" id="painelFundo">
+    <p>Escolhe o fundo das mensagens (só muda no teu telemóvel).</p>
+    <div class="amostras" id="amostras"></div>
+  </div>
   <div id="mensagens" aria-live="polite"></div>
+  <div id="previa" aria-label="Fotos prontas a enviar"></div>
   <form id="formulario">
-    <input id="texto" autocomplete="off" maxlength="2000" placeholder="Escreve uma mensagem" aria-label="Mensagem">
-    <button class="botao" type="submit">Enviar</button>
+    <button type="button" id="anexar" aria-label="Enviar foto">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg>
+    </button>
+    <input type="text" id="texto" autocomplete="off" maxlength="2000" placeholder="Escreve uma mensagem" aria-label="Mensagem">
+    <button class="botao" type="submit" id="enviar">Enviar</button>
   </form>
 </section>
+
+<div id="perfil" role="dialog" aria-label="Foto de perfil">
+  <div class="folha">
+    <h2>A minha foto de perfil</h2>
+    <div class="av grande" id="perfilGrande"></div>
+    <p>É a foto que aparece ao lado das tuas mensagens.</p>
+    <button class="botao" id="pGaleria">Escolher da galeria</button>
+    <button class="botao sec" id="pSelfie">Tirar uma selfie</button>
+    <button class="botao perigo" id="pRemover">Remover foto</button>
+    <button class="txt" id="pFechar">Fechar</button>
+  </div>
+</div>
+
+<div id="ver" role="dialog" aria-label="Foto">
+  <button class="fechar" id="verFechar" aria-label="Fechar foto">×</button>
+  <img alt="Foto ampliada">
+  <a id="verGuardar" download="foto.jpg">Guardar foto</a>
+</div>
+<input type="file" id="fFoto" accept="image/*" multiple hidden>
+<input type="file" id="fPerfil" accept="image/*" hidden>
+<input type="file" id="fPerfilCam" accept="image/*" capture="user" hidden>
+<input type="file" id="fFundo" accept="image/*" hidden>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp }
+  import { initializeFirestore, collection, doc, setDoc, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-  // 1) COLA AQUI a configuração do teu projeto Firebase (passo explicado na conversa)
   const firebaseConfig = {
     apiKey: "AIzaSyDlcVBbN27Pe_t-0tn1wSlYyEETZj9G1DM",
     authDomain: "chat-pessoal-b1217.firebaseapp.com",
@@ -106,102 +155,245 @@
 
   const $ = (id) => document.getElementById(id);
   const entrada = $("entrada"), chat = $("chat"), lista = $("mensagens");
-  let db, auth, parar = null, meuNome = "";
+  let db, auth, parar = [], meuNome = "", chatId = "", perfis = {}, docs = [];
 
-  function erro(t) { $("erro").textContent = t; }
+  const chave = (n) => n.trim().toLowerCase().replace(/[\/\s]+/g, "_");
+  const erro = (t) => { $("erro").textContent = t; };
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const ler = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 
-  async function iniciar() {
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    await signInAnonymously(auth);
+  // ---------- Fundos ----------
+  const FUNDOS = {
+    noite: ["Noite", "#1c1733"],
+    aurora: ["Aurora", "linear-gradient(160deg,#2b1b5e,#6b2f7a 55%,#c0577f)"],
+    poente: ["Pôr do sol", "linear-gradient(170deg,#3b1a4a,#a23e5a 60%,#f0925a)"],
+    oceano: ["Oceano", "linear-gradient(170deg,#0f2a4a,#14507a 60%,#1e7f8c)"],
+    floresta: ["Floresta", "linear-gradient(170deg,#10291f,#1d4d3a 60%,#3d7a52)"]
+  };
+  function aplicarFundo() {
+    const f = ler("nos2fundo") || "noite";
+    const foto = ler("nos2fundofoto");
+    if (f === "foto" && foto) lista.style.background = "linear-gradient(rgba(20,14,40,.45),rgba(20,14,40,.45)), url(" + foto + ") center/cover";
+    else lista.style.background = (FUNDOS[f] || FUNDOS.noite)[1];
+    document.querySelectorAll(".amostra").forEach((b) => b.classList.toggle("sel", b.dataset.f === f));
+  }
+  function montarAmostras() {
+    const box = $("amostras");
+    for (const k in FUNDOS) {
+      const b = document.createElement("button");
+      b.className = "amostra"; b.dataset.f = k;
+      b.innerHTML = "<span></span>" + FUNDOS[k][0];
+      b.firstChild.style.background = FUNDOS[k][1];
+      b.onclick = () => { guardar("nos2fundo", k); aplicarFundo(); };
+      box.append(b);
+    }
+    const b = document.createElement("button");
+    b.className = "amostra"; b.dataset.f = "foto";
+    b.innerHTML = "<span></span>A minha foto";
+    b.firstChild.style.background = "var(--dela)";
+    b.onclick = () => $("fFundo").click();
+    box.append(b);
   }
 
-  // Transforma o código num identificador seguro para usar como nome da conversa
-  async function idDaConversa(codigo) {
-    const bytes = new TextEncoder().encode("nos-os-dois:" + codigo.trim().toLowerCase());
-    const hash = await crypto.subtle.digest("SHA-256", bytes);
-    return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+  // ---------- Imagens ----------
+  const LIMITE = 700000; // o Firestore aceita ~1 MB por documento
+  async function comprimir(file, max, qual, quadrado) {
+    const url = URL.createObjectURL(file);
+    let img;
+    try { img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = url; }); }
+    catch (e) { URL.revokeObjectURL(url); throw e; }
+    let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+    if (quadrado) { const l = Math.min(sw, sh); sx = (sw - l) / 2; sy = (sh - l) / 2; sw = sh = l; }
+    let e = Math.min(1, max / Math.max(sw, sh));
+    for (let t = 0; t < 4; t++) {
+      const c = document.createElement("canvas");
+      c.width = Math.round(sw * e); c.height = Math.round(sh * e);
+      const x = c.getContext("2d");
+      x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+      x.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+      let q = qual, d;
+      do { d = c.toDataURL("image/jpeg", q); q -= 0.1; } while (d.length > LIMITE && q > 0.3);
+      if (d.length <= LIMITE) { URL.revokeObjectURL(url); return d; }
+      e *= 0.8;
+    }
+    URL.revokeObjectURL(url);
+    throw new Error("grande");
+  }
+  function avatar(nome, foto, peq) {
+    const a = document.createElement("div");
+    a.className = "av" + (peq ? " peq" : "");
+    if (foto) { const i = document.createElement("img"); i.src = foto; i.alt = nome; a.append(i); }
+    else a.textContent = (nome || "?").trim().charAt(0).toUpperCase();
+    return a;
+  }
+  function preencher(el, nome, foto) {
+    el.textContent = "";
+    if (foto) { const i = new Image(); i.src = foto; i.alt = nome; el.append(i); }
+    else el.textContent = (nome || "?").trim().charAt(0).toUpperCase();
+  }
+  function meuAvatar() {
+    const foto = perfis[chave(meuNome)] || "";
+    preencher($("meuAvImg"), meuNome, foto);
+    preencher($("perfilGrande"), meuNome, foto);
+    $("pRemover").style.display = foto ? "" : "none";
+    $("dica").classList.toggle("aberto", !foto && ler("nos2dica") !== "1");
   }
 
-  function hora(ts) {
-    if (!ts) return "a enviar…";
-    return ts.toDate().toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  // ---------- Perfil ----------
+  const abrirPerfil = () => { $("perfil").classList.add("aberto"); };
+  const fecharPerfil = () => { $("perfil").classList.remove("aberto"); };
+  async function guardarPerfil(f) {
+    if (!f) return;
+    try {
+      const foto = await comprimir(f, 256, 0.85, true);
+      await setDoc(doc(db, "chats", chatId, "profiles", chave(meuNome)), { nome: meuNome, foto });
+      fecharPerfil();
+    } catch (x) { alert("Não consegui guardar a foto de perfil. Tenta outra imagem."); }
+  }
+  async function removerPerfil() {
+    try { await setDoc(doc(db, "chats", chatId, "profiles", chave(meuNome)), { nome: meuNome, foto: "" }); fecharPerfil(); }
+    catch (x) { alert("Não consegui remover a foto."); }
   }
 
-  function desenhar(docs) {
+  // ---------- Fotos por enviar ----------
+  const MAX_FOTOS = 6;
+  let pend = [], aProcessar = 0;
+  function desenharPrevia() {
+    const box = $("previa"); box.textContent = "";
+    pend.forEach((d, i) => {
+      const m = document.createElement("div"); m.className = "mini";
+      const im = new Image(); im.src = d; im.alt = "Foto " + (i + 1);
+      const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Tirar foto " + (i + 1));
+      x.onclick = () => { pend.splice(i, 1); desenharPrevia(); };
+      m.append(im, x); box.append(m);
+    });
+    box.classList.toggle("aberto", pend.length > 0);
+    $("texto").placeholder = pend.length ? "Adiciona uma legenda (opcional)" : "Escreve uma mensagem";
+  }
+  async function adicionar(ficheiros) {
+    const fs = [...ficheiros].filter((f) => f.type.startsWith("image/")).slice(0, MAX_FOTOS - pend.length);
+    if (!fs.length) return;
+    $("enviar").disabled = true; let falhou = 0;
+    for (const f of fs) {
+      try { pend.push(await comprimir(f, 1000, 0.75, false)); desenharPrevia(); } catch (x) { falhou++; }
+    }
+    $("enviar").disabled = false;
+    if (falhou) alert(falhou === 1 ? "Não consegui usar uma das fotos." : "Não consegui usar " + falhou + " fotos.");
+  }
+
+  // ---------- Mensagens ----------
+  const hora = (ts) => ts ? ts.toDate().toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" }) : "a enviar…";
+
+  function desenhar() {
     lista.textContent = "";
     if (!docs.length) {
-      const p = document.createElement("p");
-      p.className = "vazio";
-      p.textContent = "Ainda não há mensagens. Escreve a primeira.";
-      lista.append(p);
-      return;
+      const p = document.createElement("p"); p.className = "vazio";
+      p.textContent = "Ainda não há mensagens. Escreve a primeira ou envia uma foto."; lista.append(p); return;
     }
     for (const d of docs) {
-      const m = d.data();
-      const el = document.createElement("div");
-      el.className = "msg" + (m.uid === auth.currentUser.uid ? " minha" : "");
-      el.append(document.createTextNode(m.text));
+      const m = d.data(), minha = m.uid === auth.currentUser.uid;
+      const linha = document.createElement("div"); linha.className = "linha" + (minha ? " minha" : "");
+      const av = avatar(m.nome, perfis[chave(m.nome || "")], true);
+      const el = document.createElement("div"); el.className = "msg" + (m.img && !m.text ? " foto" : "");
+      if (m.img) { const i = new Image(); i.src = m.img; i.alt = "Foto enviada"; i.onclick = () => abrirFoto(m.img); el.append(i); }
+      if (m.text) { const t = document.createElement("span"); if (m.img) t.className = "legenda"; t.textContent = m.text; el.append(t); }
       const s = document.createElement("small");
-      s.textContent = (m.uid === auth.currentUser.uid ? "" : m.nome + " · ") + hora(m.createdAt);
+      s.textContent = (minha ? "" : m.nome + " · ") + hora(m.createdAt);
       el.append(s);
-      lista.append(el);
+      if (minha) linha.append(el, av); else linha.append(av, el);
+      lista.append(linha);
     }
     lista.scrollTop = lista.scrollHeight;
   }
+  function abrirFoto(src) { $("ver").querySelector("img").src = src; $("verGuardar").href = src; $("ver").classList.add("aberto"); }
+  const fecharFoto = () => $("ver").classList.remove("aberto");
+  $("ver").onclick = fecharFoto;
+  $("verGuardar").onclick = (e) => e.stopPropagation();
 
+  let msgs = null;
   async function abrir(nome, codigo) {
-    const id = await idDaConversa(codigo);
-    const col = collection(db, "chats", id, "messages");
+    const bytes = new TextEncoder().encode("nos-os-dois:" + codigo.trim().toLowerCase());
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+    chatId = [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
     meuNome = nome;
-    $("titulo").textContent = "Nós os dois";
-    entrada.style.display = "none";
-    chat.classList.add("ativo");
-    parar = onSnapshot(query(col, orderBy("createdAt", "asc"), limit(300)), (snap) => desenhar(snap.docs),
-      () => { sair(); erro("Não foi possível abrir o chat. Verifica as regras do Firestore."); });
-
-    $("formulario").onsubmit = async (e) => {
-      e.preventDefault();
-      const texto = $("texto").value.trim();
-      if (!texto) return;
-      $("texto").value = "";
-      await addDoc(col, { text: texto, nome: meuNome, uid: auth.currentUser.uid, createdAt: serverTimestamp() });
-    };
+    msgs = collection(db, "chats", chatId, "messages");
+    entrada.style.display = "none"; chat.classList.add("ativo");
+    meuAvatar(); aplicarFundo();
+    parar.push(onSnapshot(query(msgs, orderBy("createdAt", "asc"), limit(200)),
+      (snap) => { docs = snap.docs; desenhar(); },
+      () => { sair(); erro("Não foi possível abrir o chat. Verifica as regras do Firestore."); }));
+    parar.push(onSnapshot(collection(db, "chats", chatId, "profiles"),
+      (snap) => { perfis = {}; snap.forEach((d) => { perfis[d.id] = d.data().foto || ""; }); meuAvatar(); desenhar(); }));
     $("texto").focus();
   }
 
-  function sair() {
-    if (parar) parar();
-    parar = null;
-    chat.classList.remove("ativo");
-    entrada.style.display = "";
-    $("entrar").disabled = false;
+  function enviarMensagem(e) {
+    e.preventDefault();
+    if (!msgs) return;
+    const texto = $("texto").value.trim();
+    const fotos = pend;
+    if (!texto && !fotos.length) return;
+    $("texto").value = ""; pend = []; desenharPrevia();
+    const base = { nome: meuNome, uid: auth.currentUser.uid };
+    const falha = () => alert("Não consegui enviar. Verifica a ligação e tenta outra vez.");
+    if (!fotos.length) { addDoc(msgs, { ...base, text: texto, createdAt: serverTimestamp() }).catch(falha); return; }
+    fotos.forEach((img, i) => {
+      const ultima = i === fotos.length - 1;
+      addDoc(msgs, { ...base, text: ultima ? texto : "", img, createdAt: serverTimestamp() }).catch(falha);
+    });
   }
 
-  $("entrar").onclick = async () => {
-    const nome = $("nome").value.trim();
-    const codigo = $("codigo").value;
-    if (!nome || codigo.trim().length < 4) { erro("Escreve o teu nome e um código com pelo menos 4 caracteres."); return; }
-    erro("");
-    $("entrar").disabled = true;
+  function sair() {
+    parar.forEach((p) => p()); parar = []; docs = []; perfis = {}; pend = []; msgs = null; desenharPrevia();
+    chat.classList.remove("ativo"); $("painelFundo").classList.remove("aberto"); fecharPerfil(); fecharFoto();
+    entrada.style.display = ""; $("entrar").disabled = false;
+  }
+
+  $("meuAv").onclick = abrirPerfil;
+  $("dicaAbrir").onclick = abrirPerfil;
+  $("dicaFechar").onclick = () => { guardar("nos2dica", "1"); $("dica").classList.remove("aberto"); };
+  $("pFechar").onclick = fecharPerfil;
+  $("perfil").onclick = (e) => { if (e.target === $("perfil")) fecharPerfil(); };
+  $("pGaleria").onclick = () => $("fPerfil").click();
+  $("pSelfie").onclick = () => $("fPerfilCam").click();
+  $("pRemover").onclick = removerPerfil;
+  $("fPerfil").onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; guardarPerfil(f); };
+  $("fPerfilCam").onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; guardarPerfil(f); };
+  $("verFechar").onclick = fecharFoto;
+  $("formulario").onsubmit = enviarMensagem;
+  $("anexar").onclick = () => $("fFoto").click();
+  $("fFoto").onchange = (e) => { const fs = [...e.target.files]; e.target.value = ""; adicionar(fs); };
+  $("texto").addEventListener("paste", (e) => { const fs = [...(e.clipboardData?.files || [])]; if (fs.length) { e.preventDefault(); adicionar(fs); } });
+  chat.addEventListener("dragover", (e) => { e.preventDefault(); chat.classList.add("arrastar"); });
+  chat.addEventListener("dragleave", (e) => { if (e.target === chat) chat.classList.remove("arrastar"); });
+  chat.addEventListener("drop", (e) => { e.preventDefault(); chat.classList.remove("arrastar"); adicionar(e.dataTransfer.files); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { fecharPerfil(); fecharFoto(); } });
+  $("btFundo").onclick = () => $("painelFundo").classList.toggle("aberto");
+  $("fFundo").onchange = async (e) => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
     try {
-      await abrir(nome, codigo);
-      try { localStorage.setItem("nos2", JSON.stringify({ nome, codigo })); } catch (e) {}
-    } catch (e) {
-      erro("Não consegui ligar. Confirma a configuração do Firebase.");
-      $("entrar").disabled = false;
-    }
+      guardar("nos2fundofoto", await comprimir(f, 900, 0.6, false));
+      guardar("nos2fundo", "foto"); aplicarFundo();
+    } catch (x) { alert("Não consegui usar essa foto como fundo."); }
+  };
+  $("entrar").onclick = async () => {
+    const nome = $("nome").value.trim(), codigo = $("codigo").value;
+    if (!nome || codigo.trim().length < 4) { erro("Escreve o teu nome e um código com pelo menos 4 caracteres."); return; }
+    erro(""); $("entrar").disabled = true;
+    try { await abrir(nome, codigo); guardar("nos2", JSON.stringify({ nome, codigo })); }
+    catch (e) { erro("Não consegui ligar. Confirma a configuração do Firebase."); $("entrar").disabled = false; }
   };
   $("sair").onclick = () => { try { localStorage.removeItem("nos2"); } catch (e) {} sair(); };
 
+  montarAmostras();
   try {
-    await iniciar();
-    const guardado = JSON.parse(localStorage.getItem("nos2") || "null");
-    if (guardado) { $("nome").value = guardado.nome; $("codigo").value = guardado.codigo; await abrir(guardado.nome, guardado.codigo); }
-  } catch (e) {
-    erro("Falta colar a configuração do Firebase no ficheiro (procura COLA_AQUI).");
-  }
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+    await signInAnonymously(auth);
+    const g = JSON.parse(ler("nos2") || "null");
+    if (g) { $("nome").value = g.nome; $("codigo").value = g.codigo; await abrir(g.nome, g.codigo); }
+  } catch (e) { erro("Não consegui ligar. Confirma a configuração do Firebase."); }
 </script>
 </body>
 </html>
