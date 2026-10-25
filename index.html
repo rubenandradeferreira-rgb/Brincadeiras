@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1c1733">
+<title>Nós os dois</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --noite: #1c1733;
+    --painel: #2a2350;
+    --minha: #ff8fa3;
+    --minha-texto: #2b1020;
+    --dela: #3b3270;
+    --texto: #f4effa;
+    --suave: #a99fcb;
+    --erro: #ffb4a8;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--noite); color: var(--texto);
+    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px; line-height: 1.4;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--minha); outline-offset: 2px; }
+
+  /* Entrada */
+  #entrada { display: flex; flex-direction: column; justify-content: center; gap: 14px; max-width: 380px; margin: 0 auto; padding: 24px; height: 100%; }
+  #entrada h1 { font-size: 2rem; font-weight: 800; margin: 0 0 4px; }
+  #entrada p { margin: 0 0 8px; color: var(--suave); }
+  label { font-weight: 600; font-size: .9rem; color: var(--suave); }
+  input { width: 100%; padding: 13px 14px; border-radius: 14px; border: 2px solid transparent; background: var(--painel); }
+  input:focus { border-color: var(--minha); outline: none; }
+  .botao { padding: 14px; border: 0; border-radius: 14px; background: var(--minha); color: var(--minha-texto); font-weight: 800; cursor: pointer; }
+  .botao:disabled { opacity: .5; cursor: default; }
+  #erro { color: var(--erro); min-height: 1.4em; margin: 0; }
+
+  /* Chat */
+  #chat { display: none; flex-direction: column; height: 100%; max-width: 640px; margin: 0 auto; }
+  #chat.ativo { display: flex; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--painel); }
+  header strong { font-size: 1.1rem; font-weight: 800; }
+  header button { background: none; border: 0; color: var(--suave); cursor: pointer; padding: 6px; }
+  #mensagens { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .vazio { margin: auto; text-align: center; color: var(--suave); }
+  .msg { max-width: 80%; padding: 9px 13px; border-radius: 18px; background: var(--dela); overflow-wrap: anywhere; white-space: pre-wrap; align-self: flex-start; border-bottom-left-radius: 6px; }
+  .msg.minha { align-self: flex-end; background: var(--minha); color: var(--minha-texto); border-bottom-left-radius: 18px; border-bottom-right-radius: 6px; }
+  .msg small { display: block; margin-top: 2px; font-size: .72rem; opacity: .7; text-align: right; white-space: normal; }
+  form { display: flex; gap: 8px; padding: 10px 12px; background: var(--painel); }
+  form input { background: var(--noite); flex: 1; }
+  form .botao { padding: 0 20px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .msg { animation: entra .18s ease-out; }
+    @keyframes entra { from { transform: translateY(6px); opacity: 0; } }
+  }
+</style>
+</head>
+<body>
+
+<section id="entrada">
+  <h1>Nós os dois</h1>
+  <p>Um chat só para vocês. Usem o mesmo código e conversam em tempo real.</p>
+  <div>
+    <label for="nome">O teu nome</label>
+    <input id="nome" autocomplete="given-name" maxlength="20">
+  </div>
+  <div>
+    <label for="codigo">Código secreto do chat</label>
+    <input id="codigo" autocomplete="off" maxlength="40" placeholder="Escolham uma frase só vossa">
+  </div>
+  <p id="erro" role="alert"></p>
+  <button class="botao" id="entrar">Entrar no chat</button>
+</section>
+
+<section id="chat" aria-label="Conversa">
+  <header>
+    <strong id="titulo">Chat</strong>
+    <button id="sair">Sair</button>
+  </header>
+  <div id="mensagens" aria-live="polite"></div>
+  <form id="formulario">
+    <input id="texto" autocomplete="off" maxlength="2000" placeholder="Escreve uma mensagem" aria-label="Mensagem">
+    <button class="botao" type="submit">Enviar</button>
+  </form>
+</section>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+  // 1) COLA AQUI a configuração do teu projeto Firebase (passo explicado na conversa)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDlcVBbN27Pe_t-0tn1wSlYyEETZj9G1DM",
+    authDomain: "chat-pessoal-b1217.firebaseapp.com",
+    projectId: "chat-pessoal-b1217",
+    appId: "1:74274216964:web:88b2fedc257f75e03c6951"
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const entrada = $("entrada"), chat = $("chat"), lista = $("mensagens");
+  let db, auth, parar = null, meuNome = "";
+
+  function erro(t) { $("erro").textContent = t; }
+
+  async function iniciar() {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    await signInAnonymously(auth);
+  }
+
+  // Transforma o código num identificador seguro para usar como nome da conversa
+  async function idDaConversa(codigo) {
+    const bytes = new TextEncoder().encode("nos-os-dois:" + codigo.trim().toLowerCase());
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+  }
+
+  function hora(ts) {
+    if (!ts) return "a enviar…";
+    return ts.toDate().toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function desenhar(docs) {
+    lista.textContent = "";
+    if (!docs.length) {
+      const p = document.createElement("p");
+      p.className = "vazio";
+      p.textContent = "Ainda não há mensagens. Escreve a primeira.";
+      lista.append(p);
+      return;
+    }
+    for (const d of docs) {
+      const m = d.data();
+      const el = document.createElement("div");
+      el.className = "msg" + (m.uid === auth.currentUser.uid ? " minha" : "");
+      el.append(document.createTextNode(m.text));
+      const s = document.createElement("small");
+      s.textContent = (m.uid === auth.currentUser.uid ? "" : m.nome + " · ") + hora(m.createdAt);
+      el.append(s);
+      lista.append(el);
+    }
+    lista.scrollTop = lista.scrollHeight;
+  }
+
+  async function abrir(nome, codigo) {
+    const id = await idDaConversa(codigo);
+    const col = collection(db, "chats", id, "messages");
+    meuNome = nome;
+    $("titulo").textContent = "Nós os dois";
+    entrada.style.display = "none";
+    chat.classList.add("ativo");
+    parar = onSnapshot(query(col, orderBy("createdAt", "asc"), limit(300)), (snap) => desenhar(snap.docs),
+      () => { sair(); erro("Não foi possível abrir o chat. Verifica as regras do Firestore."); });
+
+    $("formulario").onsubmit = async (e) => {
+      e.preventDefault();
+      const texto = $("texto").value.trim();
+      if (!texto) return;
+      $("texto").value = "";
+      await addDoc(col, { text: texto, nome: meuNome, uid: auth.currentUser.uid, createdAt: serverTimestamp() });
+    };
+    $("texto").focus();
+  }
+
+  function sair() {
+    if (parar) parar();
+    parar = null;
+    chat.classList.remove("ativo");
+    entrada.style.display = "";
+    $("entrar").disabled = false;
+  }
+
+  $("entrar").onclick = async () => {
+    const nome = $("nome").value.trim();
+    const codigo = $("codigo").value;
+    if (!nome || codigo.trim().length < 4) { erro("Escreve o teu nome e um código com pelo menos 4 caracteres."); return; }
+    erro("");
+    $("entrar").disabled = true;
+    try {
+      await abrir(nome, codigo);
+      try { localStorage.setItem("nos2", JSON.stringify({ nome, codigo })); } catch (e) {}
+    } catch (e) {
+      erro("Não consegui ligar. Confirma a configuração do Firebase.");
+      $("entrar").disabled = false;
+    }
+  };
+  $("sair").onclick = () => { try { localStorage.removeItem("nos2"); } catch (e) {} sair(); };
+
+  try {
+    await iniciar();
+    const guardado = JSON.parse(localStorage.getItem("nos2") || "null");
+    if (guardado) { $("nome").value = guardado.nome; $("codigo").value = guardado.codigo; await abrir(guardado.nome, guardado.codigo); }
+  } catch (e) {
+    erro("Falta colar a configuração do Firebase no ficheiro (procura COLA_AQUI).");
+  }
+</script>
+</body>
+</html>
